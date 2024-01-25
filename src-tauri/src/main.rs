@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
   
 use tauri::{State, Manager, AppHandle};
-use tauri_plugin_sql::{ Migration , MigrationKind , Builder  };
 use rusqlite::{Connection, Result};
 
 

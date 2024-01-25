@@ -1,12 +1,12 @@
 {
   "build": {
-    "beforeDevCommand": "npm run start",
+    "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist/tauri-app/browser"
+    "distDir": "../dist"
   },
   "package": {
-    "productName": "tauri-app",
+    "productName": "TAURI-SOFTWER-SCHOOL",
     "version": "0.0.0"
   },
   "tauri": {
@@ -20,7 +20,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.midou",
+      "identifier": "com.tauri.dev",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -36,7 +36,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "tauri-app",
+        "title": "tauri-softwer-school",
         "width": 800,
         "height": 600
       }
