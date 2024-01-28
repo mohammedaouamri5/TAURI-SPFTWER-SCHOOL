@@ -5,12 +5,14 @@ use rusqlite::{Connection, Result};
 
 
 
+use serde::Serialize;
+#[derive(Debug, Serialize)]
 pub struct User {
-    id: i32,
-    name: String,
-    family_name: String,
-    birth_day: String,
-    notes: String,
+    pub id: i32,
+    pub name: String,
+    pub family_name: String,
+    pub birth_day: String,
+    pub notes: String,
 }
 
 impl User {
@@ -27,7 +29,7 @@ impl User {
  
  
     // Constructor for a new User
-    fn new(id: i32, name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
+    pub fn new(id: i32, name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
         User {
             id,
             name: name.to_string(),
@@ -38,7 +40,7 @@ impl User {
     }
 
     // Constructor for a new User without specifying an ID (for new entries)
-    fn new_without_id(name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
+    pub fn new_without_id(name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
         User {
             id: 0, // 0 or any default value since it's AUTOINCREMENT
             name: name.to_string(),
@@ -49,7 +51,7 @@ impl User {
     }
 
     // Get the SQL insertion string for a user
-    fn insert(&self) -> String {
+    pub fn insert(&self) -> String {
         format!(
             "INSERT INTO user (name, family_name, birth_day, notes) VALUES ('{}', '{}', '{}', '{}');",
             self.name, self.family_name, self.birth_day, self.notes

@@ -1,19 +1,43 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
   
+use std::process::id;
+
 use tauri::{State, Manager, AppHandle};
-use rusqlite::{Connection, Result};
+use rusqlite::{ffi::Error, Connection, Result};
 
 
 mod connection; 
 mod db;
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(  name: &str) -> String {
-    // Should handle errors instead of unwrapping here
+mod endpoint;
  
-    format!("Your name log: {}", name)
+#[tauri::command]
+fn bruh() -> Result<i32, String> {
+    if 5 == 5 {
+        Ok(23)
+    } else {
+        Err(String::from("6546"))
+    }
+}
+
+#[tauri::command]
+fn num() -> Vec<db::Type::Type> {
+    let conn: Connection = Connection::open("db.sqlite").expect("Failed to open database connection");
+
+    let query = "SELECT id, name FROM Type";
+
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
+    let result: Vec<db::Type::Type> = stmt.query_map([], |row| {
+        Ok(db::Type::Type {
+            id: row.get(0).expect("Failed to get id"),
+            name: row.get(1).expect("Failed to get name"),
+        })
+    })
+    .expect("Failed to execute query")
+    .collect::<Result<Vec<db::Type::Type>>>()
+    .expect("Failed to collect results");
+
+    result
 }
 
 
@@ -31,7 +55,15 @@ fn main() {
     tauri::Builder::default()
     
        
-    .invoke_handler(tauri::generate_handler![greet])
+    .invoke_handler(tauri::generate_handler![
+         num,
+         bruh,
+         endpoint::Group::get_all_the_actives_groups, 
+         endpoint::Group::get_all_the_groups,
+         endpoint::Group::the_groups_of_teacher, 
+         endpoint::Group::the_active_groups_of_teacher, 
+        //  endpoint::Group::get_all_the_actives_groups, 
+        ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 

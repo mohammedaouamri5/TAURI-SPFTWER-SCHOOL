@@ -1,8 +1,8 @@
- 
-
+use serde::Serialize;
+#[derive(Debug, Serialize)]
 pub struct Type {
-    id:i32, 
-    name: String,
+    pub id:i32, 
+    pub name: String,
 
 }
  
@@ -16,13 +16,13 @@ impl Type {
         );"
     }
 
-    fn new(id: i32, name: &str ) -> Self {
+    pub fn new(id: i32, name: &str ) -> Self {
         Type {
             id,
             name: name.to_string(),
         }
     }
-    fn insert(&self) -> String {
+    pub fn insert(&self) -> String {
         format!(
             "INSERT INTO Type (id, name ) VALUES ({}, '{}' );",
             self.id, self.name 

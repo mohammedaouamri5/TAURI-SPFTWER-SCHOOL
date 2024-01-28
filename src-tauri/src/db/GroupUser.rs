@@ -1,40 +1,42 @@
+use serde::Serialize;
+#[derive(Debug, Serialize)]
 pub struct GroupeUser {
-    idGroupe: i32, // idGroupe foreign key
-    idUser: i32, // idUser foreign key
-    date_submission: String,
+    pub id_groupe: i32, // id_groupe foreign key
+    pub id_user: i32, // id_user foreign key
+    pub date_submission: String,
 }
 
 impl GroupeUser {
     pub fn create() -> &'static str {
         "CREATE TABLE IF NOT EXISTS GroupeUser 
         (
-            idGroupe INTEGER,
-            idUser INTEGER,
+            id_groupe INTEGER,
+            id_user INTEGER,
             date_submission TEXT,
-            FOREIGN KEY (idGroupe) REFERENCES Groupe(id),
-            FOREIGN KEY (idUser) REFERENCES User(id)
+            FOREIGN KEY (id_groupe) REFERENCES Groupe(id),
+            FOREIGN KEY (id_user) REFERENCES User(id)
         );"
     }
-    fn new(idGroupe: i32, idUser: i32, date_submission: &str) -> Self {
+    pub fn new(id_groupe: i32, id_user: i32, date_submission: &str) -> Self {
         GroupeUser {
-            idGroupe,
-            idUser,
+            id_groupe,
+            id_user,
             date_submission: date_submission.to_string(),
         }
     }
 
     // Get the SQL insertion string for a GroupeUser
-    fn insert(&self) -> String {
+    pub fn insert(&self) -> String {
         format!(
-            "INSERT INTO GroupeUser (idGroupe, idUser, date_submission) VALUES ({}, {}, '{}');",
-            self.idGroupe,
-            self.idUser,
+            "INSERT INTO GroupeUser (id_groupe, id_user, date_submission) VALUES ({}, {}, '{}');",
+            self.id_groupe,
+            self.id_user,
             self.date_submission
         )
     }
 
     // Get the SQL selection string for all GroupeUsers
     fn select_all() -> &'static str {
-        "SELECT idGroupe, idUser, date_submission FROM GroupeUser;"
+        "SELECT id_groupe, id_user, date_submission FROM GroupeUser;"
     }
 }

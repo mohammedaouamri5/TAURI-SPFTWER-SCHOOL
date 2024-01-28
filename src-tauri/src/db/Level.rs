@@ -1,8 +1,9 @@
-
-
+  
+use serde::Serialize;
+#[derive(Debug, Serialize)]
 pub struct Level {
-    id: i32,
-    name: String,
+    pub id: i32,
+    pub name: String,
  
 }
 
@@ -17,7 +18,7 @@ impl Level {
         );"
     }
     
-    fn new(id: i32, name: &str ) -> Self {
+    pub fn new(id: i32, name: &str ) -> Self {
         Level {
             id,
             name: name.to_string(),
@@ -25,7 +26,7 @@ impl Level {
     }
 
     // Get the SQL insertion string for a user
-    fn insert(&self) -> String {
+    pub fn insert(&self) -> String {
         format!(
             "INSERT INTO users (id, name ) VALUES ({}, '{}' );",
             self.id, self.name 

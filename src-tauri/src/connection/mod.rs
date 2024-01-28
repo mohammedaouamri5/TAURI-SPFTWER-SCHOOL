@@ -5,7 +5,7 @@ use rusqlite::Connection;
 use std::sync::Mutex;
 
 pub struct DbManager {
-    conn: Connection,
+    pub conn: Connection,
 }
 
 impl DbManager {
