@@ -1,6 +1,6 @@
  
 
-use rusqlite::{Connection, Result};
+
 
 
 
@@ -9,6 +9,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct User {
     pub id: i32,
+    pub id_type: i32,
     pub name: String,
     pub family_name: String,
     pub birth_day: String,
@@ -20,46 +21,14 @@ impl User {
         "CREATE TABLE IF NOT EXISTS user 
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            id_type INTEGER
             name TEXT, 
             family_name TEXT, 
             birth_day TEXT, 
-            notes TEXT
+            notes TEXT,
+            FOREIGN KEY (id_type) REFERENCES Level(id) 
+
         );"
     }
- 
- 
-    // Constructor for a new User
-    pub fn new(id: i32, name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
-        User {
-            id,
-            name: name.to_string(),
-            family_name: family_name.to_string(),
-            birth_day: birth_day.to_string(),
-            notes: notes.to_string(),
-        }
-    }
-
-    // Constructor for a new User without specifying an ID (for new entries)
-    pub fn new_without_id(name: &str, family_name: &str, birth_day: &str, notes: &str) -> Self {
-        User {
-            id: 0, // 0 or any default value since it's AUTOINCREMENT
-            name: name.to_string(),
-            family_name: family_name.to_string(),
-            birth_day: birth_day.to_string(),
-            notes: notes.to_string(),
-        }
-    }
-
-    // Get the SQL insertion string for a user
-    pub fn insert(&self) -> String {
-        format!(
-            "INSERT INTO user (name, family_name, birth_day, notes) VALUES ('{}', '{}', '{}', '{}');",
-            self.name, self.family_name, self.birth_day, self.notes
-        )
-    }
-
-    // Get the SQL selection string for all users
-    fn select_all() -> &'static str {
-        "SELECT id, name, family_name, birth_day, notes FROM user;"
-    }
+  
 }

@@ -20,20 +20,4 @@ impl UserLevel {
             FOREIGN KEY (id_level) REFERENCES Level(id) 
         );"
     }
-    pub fn new(id_user: i32, id_level: i32) -> Self {
-        let now = Utc::now();
-        UserLevel {
-            id_user,
-            id_level,
-            date: format!("{:04}-{:02}-{:02}", now.year(), now.month(), now.day()),
-        }
-    }
-
-    // Get the SQL insertion string for a user
-    pub fn insert(&self) -> String {
-        format!(
-            "INSERT INTO UserLevel (id_user,id_level, theDate ) VALUES ({}, {}, '{}');",
-            self.id_user, self.id_level, self.date
-        )
-    }
 }

@@ -1,10 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
   
-use std::process::id;
 
-use tauri::{State, Manager, AppHandle};
-use rusqlite::{ffi::Error, Connection, Result};
+
+
+use rusqlite::{Connection, Result};
 
 
 mod connection; 
@@ -45,24 +45,34 @@ fn main() {
 
     let db = connection::DB_MANAGER.lock().unwrap();
 
-    db.run( db::user::User::create() ) ; 
-    db.run( db::GroupUser::GroupeUser::create() ) ; 
-    db.run( db::Group::Groupe::create() ) ; 
-    db.run( db::Level::Level::create() ) ; 
-    db.run( db::Type::Type::create() ) ; 
-    db.run( db::Type::Type::create() ) ; 
+    println!( "{}\n  \n", db::user::User::create()) ; 
+    println!( "{}\n  \n", db::GroupUser::GroupeUser::create()) ; 
+    println!( "{}\n  \n", db::Group::Groupe::create()) ; 
+    println!( "{}\n  \n", db::Level::Level::create()) ; 
+    println!( "{}\n  \n", db::Type::Type::create()) ; 
+    println!( "{}\n  \n", db::pyment::Pyment::create()) ; 
+
+    db.run(db::user::User::create()); 
+    db.run(db::GroupUser::GroupeUser::create()); 
+    db.run(db::Group::Groupe::create()); 
+    db.run(db::Level::Level::create()); 
+    db.run(db::Type::Type::create()); 
+    db.run(db::pyment::Pyment::create()); 
 
     tauri::Builder::default()
     
-       
-    .invoke_handler(tauri::generate_handler![
-         num,
-         bruh,
-         endpoint::Group::get_all_the_actives_groups, 
-         endpoint::Group::get_all_the_groups,
-         endpoint::Group::the_groups_of_teacher, 
-         endpoint::Group::the_active_groups_of_teacher, 
-        //  endpoint::Group::get_all_the_actives_groups, 
+     .invoke_handler(tauri::generate_handler![
+            num,
+          endpoint::Group::get_all_the_actives_groups, 
+          endpoint::Group::get_all_the_groups,
+          endpoint::Group::the_groups_of_teacher,
+          endpoint::Group::the_active_groups_of_teacher,
+          endpoint::Group::the_active_groups_of_student,
+          endpoint::Group::the_groups_of_student,
+          endpoint::Group::create_groupe,
+          endpoint::Group::add_student_to_group,
+          endpoint::Group::group_is_done,
+         bruh
         ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

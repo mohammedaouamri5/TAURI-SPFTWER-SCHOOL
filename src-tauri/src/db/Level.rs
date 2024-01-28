@@ -18,18 +18,5 @@ impl Level {
         );"
     }
     
-    pub fn new(id: i32, name: &str ) -> Self {
-        Level {
-            id,
-            name: name.to_string(),
-        }
-    }
-
-    // Get the SQL insertion string for a user
-    pub fn insert(&self) -> String {
-        format!(
-            "INSERT INTO users (id, name ) VALUES ({}, '{}' );",
-            self.id, self.name 
-        )
-    }
+     
 }

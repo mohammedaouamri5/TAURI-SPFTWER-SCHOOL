@@ -15,18 +15,6 @@ impl Type {
             name TEXT 
         );"
     }
-
-    pub fn new(id: i32, name: &str ) -> Self {
-        Type {
-            id,
-            name: name.to_string(),
-        }
-    }
-    pub fn insert(&self) -> String {
-        format!(
-            "INSERT INTO Type (id, name ) VALUES ({}, '{}' );",
-            self.id, self.name 
-        )
-    }
+ 
     
 }
