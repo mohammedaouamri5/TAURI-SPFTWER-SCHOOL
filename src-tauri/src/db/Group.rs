@@ -10,6 +10,7 @@ pub struct Groupe {
     pub idteacher: i32,   // Foreign key referencing id in User table
     pub date_start: String,
     pub date_end: String,
+    pub name: String,
     pub is_done:bool,
 }
  
@@ -25,6 +26,7 @@ impl Groupe {
             idteacher INTEGER , 
             date_start TEXT, 
             date_end TEXT, 
+            name TEXT , 
             is_done bool, 
             FOREIGN KEY (idfrom) REFERENCES Level(id), 
             FOREIGN KEY (idto) REFERENCES Level(id), 

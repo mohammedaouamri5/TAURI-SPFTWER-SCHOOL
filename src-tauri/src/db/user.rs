@@ -21,7 +21,7 @@ impl User {
         "CREATE TABLE IF NOT EXISTS user 
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            id_type INTEGER
+            id_type INTEGER,
             name TEXT, 
             family_name TEXT, 
             birth_day TEXT, 

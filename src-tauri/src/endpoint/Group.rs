@@ -1,12 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::string;
-
 use crate::{ connection, db::{ self, Group::Groupe } };
 
 #[tauri::command]
 pub fn get_all_the_actives_groups() -> Vec<db::Group::Groupe> {
-    let ref conn = connection::DB_MANAGER.lock().unwrap().conn;
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let query = "SELECT * FROM Groupe WHERE is_done = FALSE;";
 
@@ -20,7 +20,8 @@ pub fn get_all_the_actives_groups() -> Vec<db::Group::Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -32,11 +33,13 @@ pub fn get_all_the_actives_groups() -> Vec<db::Group::Groupe> {
 
 #[tauri::command]
 pub fn get_all_the_groups() -> Vec<Groupe> {
-    let conn = connection::DB_MANAGER.lock().unwrap();
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let query = "SELECT * FROM Groupe;";
 
-    let mut stmt = conn.conn.prepare(query).expect("Failed to prepare statement");
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
     let result: Vec<Groupe> = stmt
         .query_map([], |row| {
             Ok(Groupe {
@@ -46,7 +49,8 @@ pub fn get_all_the_groups() -> Vec<Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -58,11 +62,13 @@ pub fn get_all_the_groups() -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
-    let conn = connection::DB_MANAGER.lock().unwrap();
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let ref query = format!("SELECT * FROM Groupe WHERE idteacher = {};", idteacher);
 
-    let mut stmt = conn.conn.prepare(query).expect("Failed to prepare statement");
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
     let result: Vec<Groupe> = stmt
         .query_map([], |row| {
             Ok(Groupe {
@@ -72,7 +78,8 @@ pub fn the_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -84,12 +91,14 @@ pub fn the_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_active_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
-    let conn = connection::DB_MANAGER.lock().unwrap();
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let ref query =
         format!("SELECT * FROM Groupe WHERE idteacher = {} AND is_done = FALSE;", idteacher);
 
-    let mut stmt = conn.conn.prepare(query).expect("Failed to prepare statement");
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
     let result: Vec<Groupe> = stmt
         .query_map([], |row| {
             Ok(Groupe {
@@ -99,7 +108,8 @@ pub fn the_active_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -111,7 +121,9 @@ pub fn the_active_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
-    let conn = connection::DB_MANAGER.lock().unwrap();
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let ref query =
         format!("
@@ -122,7 +134,7 @@ pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
                 AND Groupe.is_done = FALSE ;
                 ", idstudent);
 
-    let mut stmt = conn.conn.prepare(query).expect("Failed to prepare statement");
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
     let result: Vec<Groupe> = stmt
         .query_map([], |row| {
             Ok(Groupe {
@@ -132,7 +144,8 @@ pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -144,7 +157,9 @@ pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_groups_of_student(idstudent: i32) -> Vec<Groupe> {
-    let conn = connection::DB_MANAGER.lock().unwrap();
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let ref query =
         format!("
@@ -155,7 +170,7 @@ pub fn the_groups_of_student(idstudent: i32) -> Vec<Groupe> {
                 ;
                 ", idstudent);
 
-    let mut stmt = conn.conn.prepare(query).expect("Failed to prepare statement");
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
     let result: Vec<Groupe> = stmt
         .query_map([], |row| {
             Ok(Groupe {
@@ -165,7 +180,8 @@ pub fn the_groups_of_student(idstudent: i32) -> Vec<Groupe> {
                 idteacher: row.get(3).expect("Failed to get idteacher "),
                 date_start: row.get(4).expect("Failed to get date_start "),
                 date_end: row.get(5).expect("Failed to get date_end "),
-                is_done: row.get(6).expect("Failed to get is_done "),
+                name: row.get(6).expect("Failed to get name"),
+                is_done: row.get(7).expect("Failed to get is_done "),
             })
         })
         .expect("Failed to execute query")
@@ -180,19 +196,18 @@ pub fn create_groupe(
     idfrom: i32,
     idto: i32,
     idteacher: i32,
-    date_start: &str,
-    is_done: bool
+    date_start: &str, 
+    name: &str
 ) -> Result<String, String> {
-    let ref conn = connection::DB_MANAGER.lock().unwrap().conn;
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let query = format!(
-        "INSERT INTO Groupe (idfrom, idto, idteacher, date_start, is_done) 
-        VALUES ({}, {}, {}, '{}', false);",
-        idfrom,
-        idto,
-        idteacher,
-        date_start
-    );
+        "INSERT INTO Groupe 
+        (idfrom,   idto,   idteacher,    date_start,    name , is_done) 
+        VALUES
+        ({idfrom},{idto}, {idteacher}, '{date_start}','{name}', false);" );
 
     match conn.execute_batch(&query) {
         Ok(_) => Ok(format!("OK")),
@@ -206,10 +221,12 @@ pub fn create_groupe(
 
 #[tauri::command]
 pub fn add_student_to_group(idstudent: i32, idgroup: i32, date: &str) -> Result<String, String> {
-    let ref conn = connection::DB_MANAGER.lock().unwrap().conn;
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let query = format!(
-        "INSERT INTO Groupe (id_groupe , id_user , date_submission) 
+        "INSERT INTO GroupeUser (id_groupe , id_user , date_submission) 
         VALUES ({}, {}, '{}');",
         idstudent,
         idgroup,
@@ -228,14 +245,16 @@ pub fn add_student_to_group(idstudent: i32, idgroup: i32, date: &str) -> Result<
 
 #[tauri::command]
 pub fn group_is_done(idgroup: i32, date: &str) -> Result<String, String> {
-    let ref conn = connection::DB_MANAGER.lock().unwrap().conn;
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
     let query = format!(
         "UPDATE Groupe
         SET date_end = '{}', is_done = true
         WHERE id = {};",
-        date, 
-        idgroup  
+        date,
+        idgroup
     );
 
     match conn.execute_batch(&query) {

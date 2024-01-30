@@ -14,7 +14,7 @@ impl Level {
         "CREATE TABLE IF NOT EXISTS Level 
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT , 
-            name TEXT 
+            name TEXT  UNIQUE
         );"
     }
     

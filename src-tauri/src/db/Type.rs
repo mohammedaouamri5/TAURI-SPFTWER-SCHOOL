@@ -12,7 +12,7 @@ impl Type {
         "CREATE TABLE IF NOT EXISTS Type 
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT , 
-            name TEXT 
+            name TEXT UNIQUE
         );"
     }
  

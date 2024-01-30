@@ -1,7 +1,21 @@
+import { MouseEventHandler } from "react";
+
  
-const Button = (props) => {
+
+
+interface ButtonProps {
+  onClick:MouseEventHandler<HTMLButtonElement> ; 
+  label:String;
+  className:String;
+} 
+
+
+
+
+const Button = (props:ButtonProps) => {
+  
   return (
-    <button onClick={props.onClick}>
+    <button onClick={props.onClick} className={  "button " + props.className}  >
       {props.label}
     </button>
   );

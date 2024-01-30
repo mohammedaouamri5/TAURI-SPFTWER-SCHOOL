@@ -21,6 +21,10 @@ impl DbManager {
 
 // Singleton instance using lazy_static and Mutex
 lazy_static! {
-    pub static ref DB_MANAGER: Mutex<DbManager> =
+    static ref DB_MANAGER: Mutex<DbManager> =
         Mutex::new(DbManager::new("./db.sqlite"));
+}
+
+pub fn get_db() -> &'static Mutex<DbManager> {
+    &DB_MANAGER
 }

@@ -31,3 +31,17 @@
   grid-column-end: 3;
   background-color: #2099d1;
 }
+
+
+.sidebare_button {
+  height: 25px;
+  width: 100%;
+}
+
+.button {
+  
+   background-color: rgba(255, 255, 255, 0.354);
+   color: rgb(0, 0, 0) ;
+   border-color: rgb(0, 16, 138);
+}
+ 
