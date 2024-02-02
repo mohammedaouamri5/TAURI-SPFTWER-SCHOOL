@@ -14,7 +14,7 @@ pub struct User {
     pub family_name: String,
     pub birth_day: String,
     pub notes: String,
-}
+} 
 
 impl User {
     pub fn create() -> &'static str {

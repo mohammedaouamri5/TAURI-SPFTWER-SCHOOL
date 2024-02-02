@@ -1,6 +1,6 @@
   
 use serde::Serialize;
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize , PartialEq, Eq, PartialOrd, Ord)]
 pub struct Level {
     pub id: i32,
     pub name: String,

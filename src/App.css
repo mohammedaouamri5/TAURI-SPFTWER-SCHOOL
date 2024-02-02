@@ -21,6 +21,7 @@
   grid-column-start: 1;
   grid-column-end: 2;
   background-color: #006aff;
+    
 }
 .action {
   width: 100%;
@@ -29,7 +30,7 @@
   grid-row-end: 2;
   grid-column-start: 2;
   grid-column-end: 3;
-  background-color: #2099d1;
+  background-color: #00ccff;
 }
 
 

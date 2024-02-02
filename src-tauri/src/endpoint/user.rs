@@ -87,7 +87,42 @@ pub fn get_all_the_users_by_type(idtype: i32) -> Vec<User> {
 
     result
 }
+#[tauri::command]
+pub fn get_all_the_users_by_group(group_id: i32) -> Vec<User> {
+    let conn: rusqlite::Connection = rusqlite::Connection
+        ::open("db.sqlite")
+        .expect("Failed to open database connection");
 
+    let ref query = format!("
+    SELECT user.id, user.id_type ,  user.name, user.family_name, user.birth_day, user.notes
+    FROM GroupeUser
+    JOIN Groupe ON GroupeUser.id_groupe = Groupe.id
+    JOIN user ON GroupeUser.id_user = user.id
+    WHERE Groupe.id =  {group_id};");
+
+    let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
+    let result: Vec<User> = stmt
+        .query_map([], |row| {
+            Ok(User {
+                id: row.get(0).expect("Failed to get id "),
+                id_type: row.get(1).expect("Failed to get id_type "),
+                name: row.get(2).expect("Failed to get name "),
+                family_name: row.get(3).expect("Failed to get family_name "),
+                birth_day: row.get(4).expect("Failed to get birth_day "),
+                notes: row.get(5).expect("Failed to get notes "),
+            })
+        })
+        .expect("Failed to execute query")
+        .collect::<Result<Vec<User>, rusqlite::Error>>()
+        .expect("Failed to collect results");
+
+    result
+}
+
+// #[tauri::command]
+// pub fn get_level_of_user(id: i32) -> {
+    
+// }
 #[tauri::command]
 pub fn get_user_by_id(id: i32) -> User {
     let conn: rusqlite::Connection = rusqlite::Connection

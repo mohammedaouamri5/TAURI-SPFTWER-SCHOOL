@@ -11,7 +11,11 @@ mod endpoint;
 fn bruh() -> Result<i32, String> {
     if 5 == 5 { Ok(23) } else { Err(String::from("6546")) }
 }
-use crate::endpoint::{ user::{ * }, Group::{ * }, r#type::{ * } };
+use crate::endpoint::{  user::{ * },
+                        Group::{ * }, 
+                        r#type::{ * }, 
+                        Level::{ * },
+                        UserGroup::{ * }    };
 fn main() {
     let db: rusqlite::Connection = rusqlite::Connection
         ::open("db.sqlite")
@@ -25,7 +29,7 @@ fn main() {
     println!("{}\n\n", db::pyment::Pyment::create());
     println!("{}\n\n", db::UserLevel::UserLevel::create());
     
-     db.execute_batch(db::user::User::create());
+    db.execute_batch(db::user::User::create());
     db.execute_batch(db::GroupUser::GroupeUser::create());
     db.execute_batch(db::Group::Groupe::create());
     db.execute_batch(db::Level::Level::create());
@@ -53,10 +57,19 @@ fn main() {
 
                 get_all_active_the_users,
                 get_user_by_id, 
+                // get_level_of_user, 
                 get_all_the_users,
                 get_all_the_users_by_type,
+                get_all_the_users_by_group,
                 add_user,
 
+
+                get_level_of_users , 
+
+                get_type_of_users, 
+
+
+                get_groups_of_users,  
 
                 bruh
             ]

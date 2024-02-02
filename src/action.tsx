@@ -1,17 +1,42 @@
 
 
-import All_The_Groups_Table, { Group } from "./group";
+import { Group, All_The_Groups_Table, A_Groups_Table } from "./group";
+import { All_User_Table } from "./user";
 
-interface ActionProp {
-  data: Group[]
+
+export enum ActionType {
+  all_the_group,
+  a_group,
+  all_the_user,
+  all_the_active_user,
+  a_user,
+
 }
 
-export default function Action({ data }: ActionProp) {
 
-  if (data.length) {
+interface ActionProp {
+  groups?: Group[];
+  group_id?: number;
+  action?: ActionType;
+}
 
-    return <All_The_Groups_Table data={data} />;
-  } return <div></div>;
+export default function Action({ groups: data, action:action, group_id: group_id }: ActionProp) {
 
+
+
+
+  switch (action) {
+    case ActionType.all_the_group:  if (data && data.length)    { return <All_The_Groups_Table data={data} />; }      break ;
+    case ActionType.a_group:         if (group_id )             { return <A_Groups_Table group_id={group_id} />; }    break ; 
+    case ActionType.all_the_user:     { return <All_User_Table />;    }    break ; 
+
+    // case ActionType.all_the_active_user:
+    //   return <All_The_Groups_Table data={data} />;
+    // case ActionType.all_the_active_user:
+    //   return <All_The_Groups_Table data={data} />;
+
+ 
+  }
+  return <p>fuch you</p>
 }
 //   

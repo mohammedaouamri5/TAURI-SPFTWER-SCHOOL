@@ -1,22 +1,19 @@
 
 import * as React from 'react';
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow
-} from '@mui/material';
 
 import { User } from "./user";
 import { invoke } from '@tauri-apps/api/tauri';
 import { useState } from 'react';
-import { render } from 'react-dom';
+import { MyTable, Column } from "./MyTabule";
 
 
+
+
+export interface GroupsOfUsers {
+  id_group: number,
+  id_user: number,
+  name: string,
+}
 
 
 export interface Group {
@@ -36,24 +33,12 @@ interface All_The_Groups_TableProps {
 }
 
 
-
-interface Column {
-  id: 'date_end' | 'date_start' | 'id' | 'idfrom' | 'idteacher' | 'idto' | 'is_done';
-  label: string;
-  minWidth?: number;
-  align?: 'center';
-  format?: (value: number) => string;
-}
-
 interface UserIdGroup {
   [key: string]: User;
 }
 
-var users: UserIdGroup = {};
 
-export default function All_The_Groups_Table({ data }: All_The_Groups_TableProps) {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+export function All_The_Groups_Table({ data }: All_The_Groups_TableProps) {
   const [users, setUsers] = useState<UserIdGroup>({});
 
   const setUserData = async (element: Group) => {
@@ -77,6 +62,7 @@ export default function All_The_Groups_Table({ data }: All_The_Groups_TableProps
     }
   };
 
+
   React.useEffect(() => {
     if (data.length > 0 && Object.keys(users).length === 0) {
       data.forEach((element) => {
@@ -85,26 +71,9 @@ export default function All_The_Groups_Table({ data }: All_The_Groups_TableProps
     }
   }, [data, users]);
 
-  console.log(users)
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
 
   const columns: readonly Column[] = [
-    {
-      id: 'date_end',
-      label: 'until',
-      align: 'center',
-      minWidth: 120
-    },
+
     {
       id: 'date_start',
       label: 'started',
@@ -143,63 +112,76 @@ export default function All_The_Groups_Table({ data }: All_The_Groups_TableProps
       align: 'center',
       format: (value: number) => { if (value == 0) { return "✅" } else { return "❌" } },
     },
+    {
+      id: 'date_end',
+      label: 'until',
+      align: 'center',
+      minWidth: 120
+    },
   ];
 
-  // return <p>fuck you</p>;
-
-  return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data
-              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              ?.map((row: Group) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && (typeof value === 'number' || typeof value ===   'boolean')
-                            ? column.format(Number(value))
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100, data.length]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
-  );
+  return <MyTable<Group> data={data} columns={columns} name={"All_The_Groups_Table"} />;
 
 
+
+}
+
+
+
+interface A_Groups_TableProps {
+  group_id: number;
+}
+
+
+export function A_Groups_Table({ group_id }: A_Groups_TableProps) {
+  const [users, setUsers] = useState<User[]>([]);
+
+  const setUserData = async (group_id: number) => {
+    try {
+      const respond: Promise<User[]> = invoke<User[]>("get_all_the_users_by_group", { groupId: group_id });
+      respond.then(
+        (p_users: User[]) => { setUsers(p_users) }
+      );
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    setUserData(group_id);
+  }, [group_id, users]);
+
+
+
+  const columns: readonly Column[] = [
+    {
+      id: 'name',
+      label: 'name',
+      minWidth: 100,
+      align: 'center',
+      format: (value: number) => {
+
+        // return `${value}`;
+        return users[`${value}`]?.name || "bruh";
+      },
+    },
+    {
+      id: 'family_name',
+      label: 'family name',
+      minWidth: 100,
+      align: 'center',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'birth_day',
+      label: 'birth day',
+      minWidth: 100,
+      align: 'center',
+      format: (value: number) => value.toLocaleString('en-US'),
+    }
+  ];
+
+  return <MyTable<User> data={users} columns={columns} name={"A_Groups_Table"}/>;
 
 }
 
