@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { Level } from "./Level";
 import { Type } from "./Types";
 import { GroupsOfUsers } from "./group";
-import { LOG, LOGlevel } from "./LOG";
-import { cardMediaClasses } from "@mui/material";
+import { LOG  } from "./LOG";
+import { Column, MyTable } from "./MyTabule";
 
 
 
@@ -38,6 +38,7 @@ export class UserInfo {
   public family_name?: string;
   public birth_day?: string;
   public notes?: string;
+  public is_active?:boolean;  
   constructor(
     user?: User,
     groups?: string[],
@@ -59,6 +60,7 @@ export class UserInfo {
   public setfamily_name(family_name: string) { this.family_name = family_name }
   public setbirth_day(birth_day: string) { this.birth_day = birth_day }
   public setnotes(notes: string) { this.notes = notes }
+  public setis_active(is_active: boolean) { this.is_active = is_active }
   public toString() {
     return `\n{
       \n type: ${this.type ? this.type : "undefined"},
@@ -81,17 +83,19 @@ export function All_User_Table() {
     "levels": false,
     "types": false,
     "groups_of_users": false,
+    "is_active_user": false,
   })[0];
 
   const [users, setUsers] = useState<User[]>([]);
   const [levels, setLevels] = useState<Level[]>([]);
   const [types, setTypes] = useState<Type[]>([]);
   const [groups_of_users, setGroupsOfUsers] = useState<GroupsOfUsers[]>([]);
+  const [active_user, set_active_user] = useState<User[]>([]);
 
   // console.log(invoke<Level[]>("get_groups_of_users", { id: [5, 1] }))
 
 
-  console.debug("kiq<dbmiud")
+   
 
   const setUsersData = async () => {
     try {
@@ -112,6 +116,17 @@ export function All_User_Table() {
       LOG.error("Type", "Error fetching GroupsOfUsers:", error)
     }
   };
+
+  const setisactivness = async ( ) => {
+    try {
+      const respond: Promise<User[]> = invoke<User[]>("get_all_active_the_users", { });
+      
+      respond.then((p_users:User[]) => { set_active_user(p_users) });
+    } catch (error) {
+      LOG.error("Type", "Error fetching GroupsOfUsers:", error)
+    }
+  };
+   
 
   const setLevelData = async (p_users: User[]) => {
     try {
@@ -136,7 +151,7 @@ export function All_User_Table() {
     LOG.startInfo("usersinfo", "fulfill start");
 
 
-    /* adding levels  */{
+    /* adding levels  */ {
       if (levels.length > 0 && !state["levels"]) {
         usersinfo.map((p_userinfo: UserInfo) => {
           p_userinfo.setlevel(levels.find((p_level: Level) => p_level.id === p_userinfo.id)?.name || "bruh")
@@ -158,9 +173,26 @@ export function All_User_Table() {
         LOG.ifInfo(() => usersinfo.findIndex((item: UserInfo) => item.type === "bruh") === -1, 'types', "the types is add", usersinfo[0].type)
         state["types"] = true;
       } else if (!state["types"]) {
-        LOG.warn('types', 'the groups of users is still did not fetched yet');
+        LOG.warn('types', 'the types is still did not fetched yet');
       } else {
         LOG.info('types', "the types is all readdy added \n ->", usersinfo[0].type)
+      }
+    }
+   
+    /* adding the active user */ {
+      if (active_user.length > 0 && !state["is_active_user"]) {
+        usersinfo.map((p_userinfo: UserInfo) => {
+          if(typeof(p_userinfo.id) === 'number'){
+            p_userinfo.setis_active(
+              active_user.findIndex((p_user:User) => p_user.id == p_userinfo.id ) >= 0        
+            )}
+        })
+        LOG.ifInfo(() => usersinfo.findIndex((p_userinfo: UserInfo) => typeof(p_userinfo.id) === "undefined") === -1, 'types', "the is_active is add", usersinfo[0].is_active)
+        state["is_active_user"] = true;
+      } else if (!state["is_active_user"]) {
+        LOG.warn('is_active', 'the is_active is still did not fetched yet');
+      } else {
+        LOG.info('is_active', "the is_active is all readdy added \n ->", usersinfo[0].is_active)
       }
     }
 
@@ -177,51 +209,57 @@ export function All_User_Table() {
         LOG.info('groups of users', "the groups of users all readdy added \n ->", usersinfo[0].groups)
       }
     }
-    
-    
+
+
     LOG.startTrace('users info', "that what you have in users info now");
-    LOG.trace("", usersinfo.join(""));
+    LOG.trace("", usersinfo.join(","));
     LOG.end();
 
     LOG.end();
     // console.groupEnd( )
   }
 
-  
+
   useEffect(() => {
 
     LOG.startTrace('state', "state now is for");
-    LOG.trace("", state );
+    LOG.trace("", state);
     LOG.end();
-  
-  } );
+
+  }, [state]);
+
   useEffect(() => {
     if (users.length == 0) {
       setUsersData();
-      LOG.info('users', "users.length : ", users.length, "users[0] : ", users[0])
     }
   }, [users]);
-
+  
   useEffect(() => {
     if (users.length > 0 && levels.length == 0) {
       setLevelData(users);
-      console.debug(`levels     : ${levels.length}  `, levels[0])
     }
   }, [levels, users]);
+  
+  
+  useEffect(() => {
+    if (users.length > 0 && active_user.length == 0) {
+      setisactivness();
+    }
+  }, [active_user, users]);
+
+
 
   useEffect(() => {
     if (users.length > 0 && types.length == 0) {
       setTypeData(users);
-      console.debug(`types     : ${types.length}  `, types[0])
-    }
+     }
   }, [types, users]);
 
 
   useEffect(() => {
     if (users.length > 0 && groups_of_users.length == 0) {
       setGroupsOfUsersData(users);
-      console.debug(`groups_of_users     : ${groups_of_users.length}  `, groups_of_users[0])
-    }
+     }
   }, [groups_of_users, users]);
 
 
@@ -234,15 +272,74 @@ export function All_User_Table() {
         fulfill_usersinfo();
       }
     }
-  }, [users, levels, types, groups_of_users, usersinfo])
+  }, [users, levels, types, groups_of_users, usersinfo , active_user ,state])
+
  
+
+  const columns: readonly Column[] = [
+    {
+      id: "name",
+      label: "name",
+      minWidth: 12,
+      align: 'center'
+    },
+    {
+      id: "family_name",
+      label: "family name",
+      minWidth: 12,
+      align: 'center'
+    },
+    {
+      id: "birth_day",
+      label: "birth day",
+      minWidth: 12,
+      align: 'center'
+    },
+      {
+        id: "level",
+        label: "level",
+        minWidth: 12,
+        align: 'center',
+        format: (value: number) => value.toLocaleString('en-US'),
+      },
+      {
+        id: "groups",
+        label: "groups",
+        minWidth: 12,
+        align: 'center',
+        format: (value: string[]) => value.join(' | '),
+      } 
+      ,
+      {
+        id: "is_active",
+        label: "is active nowe",
+        minWidth: 12,
+        align: 'center',
+  
+        format: (value: boolean) => {
+          if (value == true) {
+            return "✅";
+          } else {
+            return "❌";
+          } 
+        }   , 
+      } 
+  ]
+
+
+
+
+
+
+
+  return <MyTable<UserInfo> data={usersinfo} columns={columns} name={`active users`}  />
   return (<div>
     <p>{`usersinfo  : ${usersinfo.length}  ${usersinfo[0]}`} </p>
     <p>{`users      : ${users.length}  ${users[0]?.name}`} </p>
     <p>{`groups_of_users      : ${groups_of_users.length}  ${groups_of_users[0]?.name}`} </p>
     <p>{`types      : ${types.length}  ${types[0]?.name}`} </p>
     <p>{`levels     : ${levels.length}  ${levels[0]?.name}`} </p></div>
-  )
+  )   
 
 }
 

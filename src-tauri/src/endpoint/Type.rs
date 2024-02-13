@@ -1,13 +1,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::{connection, db::Type::Type};
+use crate::{connection::{self, get_db}, db::Type::Type};
 
 
 
 #[tauri::command]
 pub fn add_type(name:&str) -> Result<String, String> {
-    let conn: rusqlite::Connection = rusqlite::Connection::open("db.sqlite").expect("Failed to open database connection");
-
+    let conn =  get_db().lock().unwrap(); 
+ 
     let query = format!(
         "INSERT INTO Type 
         (  name )
@@ -27,8 +27,7 @@ pub fn add_type(name:&str) -> Result<String, String> {
 pub fn get_types() ->Vec<Type>  {
 
 
-    let conn: rusqlite::Connection = rusqlite::Connection::open("db.sqlite").expect("Failed to open database connection");
-
+    let conn =  get_db().lock().unwrap(); 
     let ref query = format!("SELECT * FROM  type;");
 
     let mut stmt = conn.prepare(query).expect("Failed to prepare statement");
@@ -53,9 +52,8 @@ pub fn get_types() ->Vec<Type>  {
 
 #[tauri::command]
 pub fn get_type_of_users(id: Vec<i32>) -> Vec<Type> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     // Generate placeholders for the IN clause based on the number of id_users
     let placeholders: String = (0..id.len()).map(|_| "?").collect::<Vec<_>>().join(", ");

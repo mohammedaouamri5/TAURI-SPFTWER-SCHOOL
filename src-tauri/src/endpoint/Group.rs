@@ -1,12 +1,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::{ connection, db::{ self, Group::Groupe } };
+use crate::{ connection::get_db, db::{ self, Group::Groupe } };
 
 #[tauri::command]
 pub fn get_all_the_actives_groups() -> Vec<db::Group::Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let query = "SELECT * FROM Groupe WHERE is_done = FALSE;";
 
@@ -33,9 +32,8 @@ pub fn get_all_the_actives_groups() -> Vec<db::Group::Groupe> {
 
 #[tauri::command]
 pub fn get_all_the_groups() -> Vec<Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let query = "SELECT * FROM Groupe;";
 
@@ -62,9 +60,8 @@ pub fn get_all_the_groups() -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let ref query = format!("SELECT * FROM Groupe WHERE idteacher = {};", idteacher);
 
@@ -91,9 +88,8 @@ pub fn the_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_active_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let ref query =
         format!("SELECT * FROM Groupe WHERE idteacher = {} AND is_done = FALSE;", idteacher);
@@ -121,9 +117,8 @@ pub fn the_active_groups_of_teacher(idteacher: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let ref query =
         format!("
@@ -157,9 +152,8 @@ pub fn the_active_groups_of_student(idstudent: i32) -> Vec<Groupe> {
 
 #[tauri::command]
 pub fn the_groups_of_student(idstudent: i32) -> Vec<Groupe> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let ref query =
         format!("
@@ -199,9 +193,8 @@ pub fn create_groupe(
     date_start: &str, 
     name: &str
 ) -> Result<String, String> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let query = format!(
         "INSERT INTO Groupe 
@@ -221,9 +214,8 @@ pub fn create_groupe(
 
 #[tauri::command]
 pub fn add_student_to_group(idstudent: i32, idgroup: i32, date: &str) -> Result<String, String> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let query = format!(
         "INSERT INTO GroupeUser (id_groupe , id_user , date_submission) 
@@ -245,9 +237,8 @@ pub fn add_student_to_group(idstudent: i32, idgroup: i32, date: &str) -> Result<
 
 #[tauri::command]
 pub fn group_is_done(idgroup: i32, date: &str) -> Result<String, String> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+    let conn = get_db().lock().unwrap(); 
+
 
     let query = format!(
         "UPDATE Groupe

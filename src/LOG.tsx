@@ -1,5 +1,4 @@
-import { group } from "console";
-
+ 
 export enum LOGlevel {
     Trace,
     Info,
@@ -14,10 +13,10 @@ interface TagDetails {
 }
 
 export class LOG {
-    private static logger: LOG;
+ 
     private static enabledTags: Map<string, TagDetails> = new Map();
 
-    private constructor(private name: string, private level: LOGlevel) { }
+    
 
     private static getTimestamp(): string {
         return new Date().toISOString();
@@ -45,10 +44,7 @@ export class LOG {
         const logStyle = this.getLogStyle(level);
         console.log(`%c${this.getTimestamp()} [${LOGlevel[level]}] ${logString}\n`, logStyle, ...args);
     }
-
-    public static init(): void {
-        this.logger = new LOG('APP', LOGlevel.Trace);
-    }
+ 
 
     public static shutdown(): void {
         console.log('Logging stopped');

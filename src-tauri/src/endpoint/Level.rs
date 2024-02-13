@@ -1,4 +1,4 @@
-use crate::db::{user::User, Level::Level};
+use crate::{connection::get_db, db::{user::User, Level::Level}};
 
 
 
@@ -7,9 +7,9 @@ use rusqlite::{ Connection, Result };
 
 #[tauri::command]
 pub fn get_level_of_users(id: Vec<i32>) -> Vec<Level> {
-    let conn: rusqlite::Connection = rusqlite::Connection
-        ::open("db.sqlite")
-        .expect("Failed to open database connection");
+
+    let conn = get_db().lock().unwrap(); 
+    
 
     // Generate placeholders for the IN clause based on the number of id_users
     let placeholders: String = (0..id.len()).map(|_| "?").collect::<Vec<_>>().join(", ");

@@ -1,7 +1,7 @@
 
 
-pub mod r#type;
+pub mod Type;
 pub mod Group;
 pub mod user;
 pub mod Level;
-pub mod UserGroup; 
+pub mod user_group; 
